@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Democracy Insights | Research Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #10b981;
+            --accent: #3b82f6;
+            --dark: #0f172a;
+            --darker: #020617;
+            --light: #f8fafc;
+            --text: #e2e8f0;
+            --text-light: #94a3b8;
+            --card-bg: #1e293b;
+            --card-border: #334155;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--darker), var(--dark));
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            width: 95%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 0;
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text);
+        }
+        
+        h3 {
+            font-size: 1.3rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .chart-container {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            height: 300px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--card-border);
+            padding-bottom: 1rem;
+        }
+        
+        .tab {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-light);
+        }
+        
+        .tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+            border-top: 1px solid var(--card-border);
+            color: var(--text-light);
+        }
+        
+        .role-at-tec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .role-card {
+            background: rgba(30, 41, 59, 0.5);
+            padding: 1.2rem;
+            border-radius: 12px;
+            text-align: center;
+            border-top: 4px solid var(--accent);
+        }
+        
+        .role-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--accent);
+        }
+        
+        .question-results {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            margin-top: 1.5rem;
+        }
+        
+        .question-result-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+        }
+        
+        .question-title {
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        
+        .chart-title {
+            text-align: center;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+        
+        .interactive-questions {
+            margin: 2rem 0;
+        }
+        
+        .all-questions-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        /* Interviewee Profiles Section */
+        .interviewees-section {
+            margin: 2rem 0;
+        }
+        
+        .interviewees-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .interviewee-card {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--card-border);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .interviewee-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .interviewee-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .interviewee-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-weight: bold;
+            color: white;
+        }
+        
+        .interviewee-name {
+            font-weight: 600;
+            font-size: 1.2rem;
+            color: var(--text);
+        }
+        
+        .interviewee-details {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .interviewee-detail {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-light);
+        }
+        
+        .interviewee-detail i {
+            width: 20px;
+            color: var(--accent);
+        }
+        
+        .empty-profile {
+            opacity: 0.6;
+        }
+        
+        /* Google Drive Section */
+        .drive-section {
+            margin: 2rem 0;
+        }
+        
+        .drive-link-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem;
+            background: var(--card-bg);
+            border-radius: 16px;
+            border: 1px solid var(--card-border);
+            text-align: center;
+            gap: 1.5rem;
+        }
+        
+        .drive-icon {
+            font-size: 4rem;
+            color: #10b981;
+            margin-bottom: 1rem;
+        }
+        
+        .drive-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+        
+        .drive-link:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(37, 99, 235, 0.4);
+        }
+        
+        .drive-description {
+            color: var(--text-light);
+            max-width: 600px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value">22</div>
+                <div class="stat-label">Recorded Interviews</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">100%</div>
+                <div class="stat-label">Completion Rate</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value">13</div>
+                <div class="stat-label">Interview Questions</div>
+            </div>
+        </div>
+        
+        <div class="dashboard">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Demographic Overview</h2>
+                    <div class="tabs">
+                        <div class="tab active" data-tab="gender">Gender</div>
+                        <div class="tab" data-tab="age">Age</div>
+                        <div class="tab" data-tab="academic">Academic Division</div>
+                        <div class="tab" data-tab="role">Role at Tec</div>
+                    </div>
+                </div>
+                
+                <div class="tab-content active" id="gender-tab">
+                    <div class="chart-title">Gender Distribution of Participants</div>
+                    <div class="chart-container">
+                        <canvas id="genderChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="age-tab">
+                    <div class="chart-title">Age Distribution of Participants</div>
+                    <div class="chart-container">
+                        <canvas id="ageChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="academic-tab">
+                    <div class="chart-title">Academic Division of Participants</div>
+                    <div class="chart-container">
+                        <canvas id="academicChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="role-tab">
+                    <div class="chart-title">Role at Tec Monterrey</div>
+                    <div class="chart-container">
+                        <canvas id="roleChart"></canvas>
+                    </div>
+                    <div class="role-at-tec-grid">
+                        <div class="role-card">
+                            <div class="role-value">59%</div>
+                            <div class="stat-label">Mexican Students</div>
+                        </div>
+                        <div class="role-card">
+                            <div class="role-value">23%</div>
+                            <div class="stat-label">International Students</div>
+                        </div>
+                        <div class="role-card">
+                            <div class="role-value">9%</div>
+                            <div class="stat-label">Professors/Staff/Admin</div>
+                        </div>
+                        <div class="role-card">
+                            <div class="role-value">9%</div>
+                            <div class="stat-label">Exatecs</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Google Drive Section -->
+        <div class="drive-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Interview Recordings</h2>
+                </div>
+                <div class="drive-link-container">
+                    <div class="drive-icon">
+                        <i class="fab fa-google-drive"></i>
+                    </div>
+                    <h3>Access All Interview Recordings</h3>
+                    <p class="drive-description">
+                        All 22 recorded interviews are available in our Google Drive folder. 
+                       
+                    </p>
+                    <a href="https://drive.google.com/drive/folders/1QjGczB3CkuHlXBcH3l94XfCT2WIpRmqd?usp=sharing" 
+                       target="_blank" class="drive-link">
+                        <i class="fas fa-external-link-alt"></i>
+                        Open Interview Recordings Folder
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Interviewee Profiles Section -->
+        <div class="interviewees-section">
+            <div class="card">
+                <div class="card-header">
+                    <h2>Interviewee Profiles</h2>
+                </div>
+                <div class="interviewees-grid">
+                    <!-- Interviewee 1 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">1</div>
+                            <div class="interviewee-name">Diana Espadas</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>20 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Mechatronics Engineering</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Santa Fe Campus</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>5th semester</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interviewee 2 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">2</div>
+                            <div class="interviewee-name">Ángel Contreras</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>21 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Innovation and Development Engineering</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Santa Fe Campus</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>7th semester</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interviewee 3 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">3</div>
+                            <div class="interviewee-name">Alejandro Velazco</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>21 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Law</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Ciudad de México Campus</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>5th semester</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interviewee 4 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">4</div>
+                            <div class="interviewee-name">Lourdes Martínez</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>40 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Mentor at Reflekto Community</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Santa Fe Campus</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interviewee 5 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">5</div>
+                            <div class="interviewee-name">Miranda Fragoso</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>20 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>International Relations</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Santa Fe Campus</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interviewee 6 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">6</div>
+                            <div class="interviewee-name">Enzo Bazin</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>20 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>International Student (France)</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>5th semester</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interviewee 7 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">7</div>
+                            <div class="interviewee-name">Clara Delie</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>20 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>International Student (France)</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>5th semester</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interviewee 8 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">8</div>
+                            <div class="interviewee-name">Marie Von Rothkirch</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>20 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>International Student (Germany)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interviewee 9 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">9</div>
+                            <div class="interviewee-name">Chad Aricique</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>21 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>International Student (France)</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>5th semester</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interviewee 10 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">10</div>
+                            <div class="interviewee-name">Constant Bozzoni</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>20 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>International Student (France)</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>5th semester</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interviewee 11 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">11</div>
+                            <div class="interviewee-name">Javier Pilar</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>19 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Finance</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Santa Fe Campus</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>1st semester</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interviewee 12 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">12</div>
+                            <div class="interviewee-name">Gala Olmos</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>19 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Marketing</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Santa Fe Campus</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>1st semester</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interviewee 13 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">13</div>
+                            <div class="interviewee-name">Diego Alaman</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>18 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Strategic and Transformative Business</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Santa Fe Campus</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>1st semester</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interviewee 14 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">14</div>
+                            <div class="interviewee-name">Ziyan Liu (Alex)</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>19 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Global Business</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Santa Fe Campus</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>1st semester</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interviewee 15 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">15</div>
+                            <div class="interviewee-name">Rebecca Miyano</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>19 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Global Business</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-map-marker-alt"></i>
+                                <span>Santa Fe Campus</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>1st semester</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interviewee 16 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">16</div>
+                            <div class="interviewee-name">Diego Diaz</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>21 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Mechatronics Engineering</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>5th semester</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interviewee 17 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">17</div>
+                            <div class="interviewee-name">Santiago Espinosa</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>20 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Mechatronics Engineering</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>5th semester</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interviewee 18 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">18</div>
+                            <div class="interviewee-name">Alonso Quesada</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>20 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Mechatronics Engineering</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>5th semester</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interviewee 19 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">19</div>
+                            <div class="interviewee-name">Gloria Gutierrez Alba</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>39 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Specialist at CASA EGADE</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Interviewee 20 -->
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">20</div>
+                            <div class="interviewee-name">Jose Arrechederra</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>20 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Mechatronical Engineering</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>5th semester</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">21</div>
+                            <div class="interviewee-name">Alan Silva</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>28 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Exactec</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="interviewee-card">
+                        <div class="interviewee-header">
+                            <div class="interviewee-avatar">22</div>
+                            <div class="interviewee-name"> Karina Velazco</div>
+                        </div>
+                        <div class="interviewee-details">
+                            <div class="interviewee-detail">
+                                <i class="fas fa-user"></i>
+                                <span>25 years old</span>
+                            </div>
+                            <div class="interviewee-detail">
+                                <i class="fas fa-graduation-cap"></i>
+                                <span>Exactec</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="interactive-questions">
+            <div class="card">
+                <div class="card-header">
+                    <h2>All Interview Questions & Results</h2>
+                </div>
+                
+                <div class="all-questions-container">
+                    <!-- Question 1 -->
+                    <div class="question-result-card">
+                        <div class="question-title">1. What do you understand by the word democracy?</div>
+                        <div class="chart-container">
+                            <canvas id="q1Chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Question 2 -->
+                    <div class="question-result-card">
+                        <div class="question-title">2. Do you think democracy is only exercised in politics, or can it also exist in other areas?</div>
+                        <div class="chart-container">
+                            <canvas id="q2Chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Question 3 -->
+                    <div class="question-result-card">
+                        <div class="question-title">3. Do you believe democracy is the best political system? Why or why not?</div>
+                        <div class="chart-container">
+                            <canvas id="q3Chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Question 4 -->
+                    <div class="question-result-card">
+                        <div class="question-title">4. If another type of government could solve the problems in your country, would you prefer it over democracy? Why or why not?</div>
+                        <div class="chart-container">
+                            <canvas id="q4Chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Question 5 -->
+                    <div class="question-result-card">
+                        <div class="question-title">5. What values do you think are most essential in a democracy?</div>
+                        <div class="chart-container">
+                            <canvas id="q5Chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Question 6 -->
+                    <div class="question-result-card">
+                        <div class="question-title">6. What qualities should a leader have in a democracy?</div>
+                        <div class="chart-container">
+                            <canvas id="q6Chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Question 7 -->
+                    <div class="question-result-card">
+                        <div class="question-title">7. Which practices make democracy stronger (e.g., free press, education, transparency, civic participation)?</div>
+                        <div class="chart-container">
+                            <canvas id="q7Chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Question 8 -->
+                    <div class="question-result-card">
+                        <div class="question-title">8. Do you think ordinary citizens can truly influence political decisions?</div>
+                        <div class="chart-container">
+                            <canvas id="q8Chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Question 9 -->
+                    <div class="question-result-card">
+                        <div class="question-title">9. What barriers do you see that prevent people from participating in democracy?</div>
+                        <div class="chart-container">
+                            <canvas id="q9Chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Question 10 -->
+                    <div class="question-result-card">
+                        <div class="question-title">10. Do you think young people today are more or less interested in politics than past generations? Why?</div>
+                        <div class="chart-container">
+                            <canvas id="q10Chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Question 11 -->
+                    <div class="question-result-card">
+                        <div class="question-title">11. What problems or weaknesses do you observe in today's democracies around the world?</div>
+                        <div class="chart-container">
+                            <canvas id="q11Chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Question 12 -->
+                    <div class="question-result-card">
+                        <div class="question-title">12. How do social media and technology impact democracy today?</div>
+                        <div class="chart-container">
+                            <canvas id="q12Chart"></canvas>
+                        </div>
+                    </div>
+                    
+                    <!-- Question 13 -->
+                    <div class="question-result-card">
+                        <div class="question-title">13. In your opinion, what must change to make democracy more effective?</div>
+                        <div class="chart-container">
+                            <canvas id="q13Chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Democracy Research Study • GPO 602 • Tec de Monterrey • 2025</p>
+            <p>All interviews recorded and transcribed for research purposes</p>
+        </footer>
+    </div>
+
+    <script>
+        // Initialize charts
+        function initCharts() {
+            // Gender Distribution Chart
+            const genderCtx = document.getElementById('genderChart').getContext('2d');
+            new Chart(genderCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Female', 'Male', 'Prefer not to say'],
+                    datasets: [{
+                        data: [9, 13, 0],
+                        backgroundColor: [
+                            '#3b82f6',
+                            '#2563eb',
+                            '#10b981'
+                        ],
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e2e8f0',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Age Distribution Chart
+            const ageCtx = document.getElementById('ageChart').getContext('2d');
+            new Chart(ageCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['18-20', '21-29', '30-40'],
+                    datasets: [{
+                        label: 'Number of Participants',
+                        data: [14, 6, 2],
+                        backgroundColor: '#2563eb',
+                        borderColor: '#1d4ed8',
+                        borderWidth: 0,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: '#334155'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // Academic Division Chart
+            const academicCtx = document.getElementById('academicChart').getContext('2d');
+            new Chart(academicCtx, {
+                type: 'pie',
+                data: {
+                    labels: ['Engineering & Technology', 'Law & Social Sciences', 'Business & Management', 'Professional Staff', 'Exatecs'],
+                    datasets: [{
+                        data: [10, 3, 5, 2, 2],
+                        backgroundColor: [
+                            '#2563eb',
+                            '#3b82f6',
+                            '#10b981',
+                            '#f59e0b',
+                            '#ef4444'
+                        ],
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e2e8f0',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Role at Tec Chart
+            const roleCtx = document.getElementById('roleChart').getContext('2d');
+            new Chart(roleCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Mexican Students', 'International Students', 'Professors/Staff/Admin', 'Exatecs'],
+                    datasets: [{
+                        data: [13, 5, 2, 2],
+                        backgroundColor: [
+                            '#2563eb',
+                            '#10b981',
+                            '#3b82f6',
+                            '#f59e0b'
+                        ],
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e2e8f0',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Question 1 Chart - Understanding of Democracy
+            const q1Ctx = document.getElementById('q1Chart').getContext('2d');
+            new Chart(q1Ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Citizen Participation', 'Political System', 'Rights & Freedoms', 'Equality', 'Voting'],
+                    datasets: [{
+                        label: 'Percentage of Responses',
+                        data: [19, 17, 12, 8, 15],
+                        backgroundColor: '#2563eb',
+                        borderWidth: 0,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 20, // Changed from 100 to 20
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: '#334155'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // Question 2 Chart - Democracy Beyond Politics
+            const q2Ctx = document.getElementById('q2Chart').getContext('2d');
+            new Chart(q2Ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Yes, extends to daily life', 'No, only political', 'Unsure'],
+                    datasets: [{
+                        data: [21, 0, 1],
+                        backgroundColor: [
+                            '#2563eb',
+                            '#10b981',
+                            '#3b82f6'
+                        ],
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e2e8f0',
+                                font: {
+                                    size: 12
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Question 3 Chart - Is Democracy the Best System?
+            const q3Ctx = document.getElementById('q3Chart').getContext('2d');
+            new Chart(q3Ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Yes, with improvements', 'Yes, absolutely', 'No, better alternatives', 'Unsure'],
+                    datasets: [{
+                        data: [14, 7, 0, 1],
+                        backgroundColor: [
+                            '#2563eb',
+                            '#3b82f6',
+                            '#10b981',
+                            '#f59e0b'
+                        ],
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e2e8f0',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Question 4 Chart - Alternative Government Preference
+            const q4Ctx = document.getElementById('q4Chart').getContext('2d');
+            new Chart(q4Ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['No, prefer democracy', 'Yes, if more effective', 'Depends on the alternative', 'Unsure'],
+                    datasets: [{
+                        data: [12, 6, 4, 0],
+                        backgroundColor: [
+                            '#2563eb',
+                            '#10b981',
+                            '#3b82f6',
+                            '#f59e0b'
+                        ],
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e2e8f0',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Question 5 Chart - Essential Democratic Values
+            const q5Ctx = document.getElementById('q5Chart').getContext('2d');
+            new Chart(q5Ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Freedom', 'Equality', 'Justice', 'Participation', 'Transparency', 'Responsability', 'Others'],
+                    datasets: [{
+                        label: 'Percentage of Responses',
+                        data: [7, 8, 10, 11, 9, 13, 4],
+                        backgroundColor: '#2563eb',
+                        borderWidth: 0,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 20, // Changed from 100 to 20
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: '#334155'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // Question 6 Chart - Leader Qualities
+            const q6Ctx = document.getElementById('q6Chart').getContext('2d');
+            new Chart(q6Ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Integrity', 'Empathy', 'Transparency', 'Competence', 'Communication', 'Others'],
+                    datasets: [{
+                        label: 'Percentage of Responses',
+                        data: [16, 16, 7, 9, 12, 6],
+                        backgroundColor: '#10b981',
+                        borderWidth: 0,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 20, // Changed from 100 to 20
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: '#334155'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // Question 7 Chart - Practices Strengthening Democracy
+            const q7Ctx = document.getElementById('q7Chart').getContext('2d');
+            new Chart(q7Ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Education', 'Free Press', 'Civic Participation', 'Transparency', 'Rule of Law'],
+                    datasets: [{
+                        label: 'Percentage of Responses',
+                        data: [10, 10, 15, 13, 7],
+                        backgroundColor: '#3b82f6',
+                        borderWidth: 0,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 20, // Changed from 100 to 20
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: '#334155'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // Question 8 Chart - Citizen Influence
+            const q8Ctx = document.getElementById('q8Chart').getContext('2d');
+            new Chart(q8Ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Yes, with collective action', 'Limited influence', 'No, decisions made by elites', 'Unsure'],
+                    datasets: [{
+                        data: [14, 5, 0, 1],
+                        backgroundColor: [
+                            '#2563eb',
+                            '#3b82f6',
+                            '#10b981',
+                            '#f59e0b'
+                        ],
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e2e8f0',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Question 9 Chart - Barriers to Participation
+            const q9Ctx = document.getElementById('q9Chart').getContext('2d');
+            new Chart(q9Ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Lack of Trust', 'Complexity', 'Time Constraints', 'Disinformation', 'Economic Barriers', 'Corruption'],
+                    datasets: [{
+                        label: 'Percentage of Responses',
+                        data: [15, 10, 2, 13, 7, 9],
+                        backgroundColor: '#f59e0b',
+                        borderWidth: 0,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 20, // Changed from 100 to 20
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: '#334155'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // Question 10 Chart - Youth Interest in Politics
+            const q10Ctx = document.getElementById('q10Chart').getContext('2d');
+            new Chart(q10Ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['More interested (different issues)', 'Less interested', 'Similar interest', 'Unsure'],
+                    datasets: [{
+                        data: [14, 3, 2, 1],
+                        backgroundColor: [
+                            '#2563eb',
+                            '#10b981',
+                            '#3b82f6',
+                            '#f59e0b'
+                        ],
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e2e8f0',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Question 11 Chart - Problems in Democracies
+            const q11Ctx = document.getElementById('q11Chart').getContext('2d');
+            new Chart(q11Ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Polarization', 'Corruption', 'Inequality', 'Disinformation', 'Voter Apathy'],
+                    datasets: [{
+                        label: 'Percentage of Responses',
+                        data: [8, 19, 5, 13, 3],
+                        backgroundColor: '#ef4444',
+                        borderWidth: 0,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 20, // Changed from 100 to 20
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: '#334155'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // Question 12 Chart - Social Media Impact
+            const q12Ctx = document.getElementById('q12Chart').getContext('2d');
+            new Chart(q12Ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Mostly negative', 'Mixed impact', 'Mostly positive', 'Unsure'],
+                    datasets: [{
+                        data: [0, 16, 2, 2],
+                        backgroundColor: [
+                            '#2563eb',
+                            '#3b82f6',
+                            '#10b981',
+                            '#f59e0b'
+                        ],
+                        borderWidth: 0,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#e2e8f0',
+                                font: {
+                                    size: 11
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Question 13 Chart - Making Democracy More Effective
+            const q13Ctx = document.getElementById('q13Chart').getContext('2d');
+            new Chart(q13Ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Education Reform', 'Anti-Corruption', 'Electoral Reform', 'Civic Engagement', 'Media Literacy'],
+                    datasets: [{
+                        label: 'Percentage of Responses',
+                        data: [11, 12, 5, 12, 8],
+                        backgroundColor: '#10b981',
+                        borderWidth: 0,
+                        borderRadius: 5
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            max: 20, // Changed from 100 to 20
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                color: '#334155'
+                            }
+                        },
+                        y: {
+                            ticks: {
+                                color: '#94a3b8'
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Tab functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            initCharts();
+            
+            // Tab switching
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.getAttribute('data-tab');
+                    
+                    // Remove active class from all tabs and contents
+                    tabs.forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(content => {
+                        content.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked tab and corresponding content
+                    tab.classList.add('active');
+                    document.getElementById(`${tabName}-tab`).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
